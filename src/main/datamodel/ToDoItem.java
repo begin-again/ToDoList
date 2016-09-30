@@ -40,8 +40,8 @@ public class ToDoItem {
     this.deadLine = deadLine;
   }
 
-  @Override
+/*  @Override
   public String toString() {
     return shortDescription;
-  }
+  }*/
 }
