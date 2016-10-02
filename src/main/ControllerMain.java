@@ -2,9 +2,13 @@ package main;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -27,8 +31,21 @@ public class ControllerMain {
   private Label deadlineLabel;
   @FXML
   private BorderPane mainBorderPane;
+  @FXML
+  private ContextMenu listContextMenu;
 
   public void initialize() {
+
+    listContextMenu = new ContextMenu();
+    MenuItem deleteMenuItem = new MenuItem("Delete");
+    deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+        ToDoItem item = todoListView.getSelectionModel().getSelectedItem();
+        deleteItem(item);
+      }
+    });
+    listContextMenu.getItems().addAll(deleteMenuItem);
 
     todoListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ToDoItem>() {
       @Override
@@ -67,6 +84,15 @@ public class ControllerMain {
             }
           }
         };
+
+        // associate context menu to list view
+        cell.emptyProperty().addListener(
+          (obs, wasEmpty, isNowEmpty) -> {
+            if(isNowEmpty) {
+              cell.setContextMenu(null);
+            } else cell.setContextMenu(listContextMenu);
+          }
+        );
         return cell;
       }
     });
@@ -102,9 +128,32 @@ public class ControllerMain {
   }
 
   @FXML
+  public void handleKeyPressed(KeyEvent keyEvent) {
+    ToDoItem selectedItem = todoListView.getSelectionModel().getSelectedItem();
+    if(selectedItem != null) {
+      if(keyEvent.getCode().equals(KeyCode.DELETE)) {
+        deleteItem(selectedItem);
+      }
+    }
+  }
+
+  @FXML
   public void handleClickListView() {
     ToDoItem item = todoListView.getSelectionModel().getSelectedItem();
     itemDetailsTextArea.setText(item.getDetails());
     deadlineLabel.setText(item.getDeadLine().toString());
+  }
+
+  @FXML
+  public void deleteItem(ToDoItem item) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle("Delete ToDo Item");
+    alert.setHeaderText("Delete Item: " + item.getShortDescription());
+    alert.setContentText("Are you sure? Press OK to confirm");
+    Optional<ButtonType> result = alert.showAndWait();
+    if (result.isPresent() && result.get() == ButtonType.OK) {
+      ToDoData.getinstance().deleteTodoItem(item);
+    }
+
   }
 }
