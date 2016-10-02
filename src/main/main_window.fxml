@@ -10,18 +10,48 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.ToggleButton?>
 <BorderPane fx:id="mainBorderPane" fx:controller="main.ControllerMain"
             xmlns:fx="http://javafx.com/fxml">
     <top>
-        <MenuBar>
-            <Menu text="File">
-                <items>
-                    <MenuItem text="New..." onAction="#showNewItemDialog"/>
-                    <SeparatorMenuItem/>
-                    <MenuItem text="Exit"/>
-                </items>
-            </Menu>
-        </MenuBar>
+        <VBox>
+            <MenuBar>
+                <Menu text="File">
+                    <items>
+                        <MenuItem text="New..." onAction="#showNewItemDialog"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Exit" onAction="#handleExit"/>
+                    </items>
+                </Menu>
+            </MenuBar>
+            <ToolBar>
+                <HBox>
+                    <!--Button tooltip= is expecting an object so it won't work here-->
+                    <Button onAction="#showNewItemDialog">
+                        <!--Have to put tooltips like we do with graphics-->
+                        <tooltip>
+                            <Tooltip  text="Add a new ToDo Item"/>
+                        </tooltip>
+                        <graphic>
+                            <ImageView>
+                                <Image url="@/toolbarButtonGraphics/general/New24.gif"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <ToggleButton fx:id="filterToggleButton" text="Today's Items" onAction="#handleFilterButton">
+                        <tooltip>
+                            <Tooltip text="Button Down: Show Today's items; Button Up: Show All Items"/>
+                        </tooltip>
+                    </ToggleButton>
+                </HBox>
+            </ToolBar>
+        </VBox>
+
     </top>
     <left>
         <ListView fx:id="todoListView" onKeyPressed="#handleKeyPressed">
